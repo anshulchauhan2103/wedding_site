@@ -295,13 +295,21 @@ function goFullscreen() {
 
 function restOnEnvelope() {
   placeSeal();
-  film.addEventListener("seeked", () => film.classList.add("ready"), { once: true });
-  film.currentTime = FILM_REST;
+  if (film.paused && film.currentTime < FILM_REST - 0.05) film.currentTime = FILM_REST;
 }
 
-// metadata can arrive before this script runs
-if (film.readyState >= 1) restOnEnvelope();
-else film.addEventListener("loadedmetadata", restOnEnvelope, { once: true });
+// the film only becomes visible once it can actually paint a frame
+["seeked", "playing"].forEach((type) =>
+  film.addEventListener(type, () => film.classList.add("ready"), { once: true })
+);
+
+// metadata can arrive before this script runs; iPhone Safari needs an explicit load()
+if (film.readyState >= 1) {
+  restOnEnvelope();
+} else {
+  film.addEventListener("loadedmetadata", restOnEnvelope, { once: true });
+  if (film.networkState !== HTMLMediaElement.NETWORK_LOADING) film.load();
+}
 addEventListener("resize", placeSeal);
 placeSeal();
 
@@ -321,7 +329,7 @@ function finish() {
   if (ended) return;
   ended = true;
   film.pause();
-  film.currentTime = FILM_END;
+  if (film.readyState >= 1) film.currentTime = FILM_END;
   body.classList.add("revealed");
   fx.petals(60);
   setTimeout(() => {
@@ -346,11 +354,8 @@ $("seal").addEventListener("click", () => {
   if (navigator.vibrate) navigator.vibrate(18);
   body.classList.add("playing");
 
-  if (reduceMotion) {
-    liftSeal();
-    finish();
-    return;
-  }
+  // skip the still opening frames if Safari never seeked there
+  if (film.readyState >= 1 && film.currentTime < FILM_REST - 0.05) film.currentTime = FILM_REST;
   const started = film.play();
   if (started && started.catch) {
     // if the browser refuses to play, still open the invitation
