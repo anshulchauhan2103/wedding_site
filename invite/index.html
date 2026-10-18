@@ -25,7 +25,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Pinyon+Script&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="invite.css">
   <link rel="preload" as="image" href="door.jpg">
-  <link rel="preload" as="image" href="curtain.png">
+  <link rel="preload" as="image" href="curtains.png">
   <link rel="preload" as="image" href="garden.png">
 </head>
 <body class="locked">
@@ -89,8 +89,6 @@
 
     <!-- ───────── Hero: curtains + garden ───────── -->
     <section class="hero" id="hero">
-      <img class="garden" src="garden.png" alt="" aria-hidden="true">
-      <span class="shimmer" aria-hidden="true"></span>
 
       <div class="hero-text">
         <div class="seq heart-top" style="--d:.2s" aria-hidden="true">♥</div>
@@ -104,8 +102,9 @@
         <p class="seq parents" style="--d:3.4s">Son of Mrs. &amp; Mr. ______</p>
       </div>
 
-      <img class="curtain left" src="curtain.png" alt="" aria-hidden="true">
-      <img class="curtain right" src="curtain-r.png" alt="" aria-hidden="true">
+      <div class="curtain left" aria-hidden="true"><img src="curtains.png" alt=""></div>
+      <div class="curtain right" aria-hidden="true"><img src="curtains.png" alt=""></div>
+      <img class="garden" src="garden.png" alt="" aria-hidden="true">
 
       <div class="scroll-cue" aria-hidden="true"><span></span></div>
     </section>
