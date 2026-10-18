@@ -313,9 +313,9 @@ body::after {
   position: relative;
   display: block;
   z-index: 1;
-  margin: -0.62em 0 -0.78em;
-  padding-left: 8%;
-  text-align: center;
+  margin: -0.5em 0 -0.9em;
+  padding-left: 24%;
+  text-align: left;
   line-height: 1;
   font-family: "Pinyon Script", cursive;
   font-size: clamp(40px, 12vw, 56px);
