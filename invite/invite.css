@@ -287,8 +287,10 @@ body::after {
 
 .hero {
   position: relative;
-  height: var(--vh);
-  min-height: 640px;
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  min-height: var(--vh);
   overflow: hidden;
   background:
     radial-gradient(80% 55% at 50% 42%, #fffdf6 0%, rgba(255, 253, 246, 0) 70%),
@@ -308,7 +310,7 @@ body::after {
   position: absolute;
   top: 0;
   width: 50%;
-  height: 56%;
+  height: calc(var(--cw) * 100cqw * 637 / 1080);
   z-index: 4;
   overflow: hidden;
   pointer-events: none;
@@ -319,7 +321,7 @@ body::after {
   position: absolute;
   top: 0;
   width: calc(var(--cw) * 200%);
-  height: 100%;
+  height: auto;
   filter: drop-shadow(0 6px 10px rgba(90, 76, 50, 0.18));
 }
 
@@ -342,20 +344,19 @@ body::after {
 .parting .curtain { transform: none; }
 
 .garden {
-  position: absolute;
-  left: 50%;
-  bottom: -1%;
+  position: relative;
   z-index: 5;
-  width: 86%;
+  align-self: center;
+  width: 86cqw;
   max-width: 410px;
-  transform: translateX(-50%);
+  margin: auto 0 -1cqw;
   pointer-events: none;
 }
 
 .hero-text {
   position: relative;
   z-index: 6;
-  padding: clamp(118px, 18vh, 160px) 30px 0;
+  padding: calc(27cqw + max(0px, (var(--vh) - 178cqw) * 0.45)) 6cqw 4cqw;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -374,13 +375,13 @@ body::after {
 }
 
 .heart-top {
-  font-size: 16px;
+  font-size: 4cqw;
   color: var(--script);
-  margin-bottom: 4px;
+  margin-bottom: 1cqw;
 }
 
 .eyebrow {
-  font-size: 20px;
+  font-size: 5.1cqw;
   font-style: italic;
   color: var(--ink-soft);
 }
@@ -388,7 +389,7 @@ body::after {
 .name {
   font-family: "Pinyon Script", cursive;
   font-weight: 400;
-  font-size: min(14vw, 7.4vh, 58px);
+  font-size: 13cqw;
   line-height: 1.4;
   padding: 0 0.35em;
   color: var(--script);
@@ -416,17 +417,17 @@ body::after {
 }
 
 .parents {
-  font-size: 15px;
+  font-size: 3.85cqw;
   font-style: italic;
   color: var(--ink-soft);
-  margin-top: -6px;
+  margin-top: -1.5cqw;
 }
 
 .amp {
   font-family: "Pinyon Script", cursive;
-  font-size: 36px;
+  font-size: 9.2cqw;
   line-height: 1;
-  margin: 10px 0 -2px;
+  margin: 2.5cqw 0 -0.5cqw;
   color: var(--gold);
 }
 
