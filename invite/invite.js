@@ -407,7 +407,7 @@ function watchFilm(e) {
   const left = FILM_END - t;
   if (left < SETTLE) {
     const k = Math.max(0, left / SETTLE);
-    film.playbackRate = Math.max(0.12, k * k * (3 - 2 * k));
+    film.playbackRate = Math.max(0.3, k * k * (3 - 2 * k));
   }
   if (left < 0.7) reveal();
 
