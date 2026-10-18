@@ -265,10 +265,18 @@ const body = document.body;
 
 // moments in opening-portrait.mp4 (seconds)
 const FILM_REST = 1.6;   // sealed envelope, still
-const SEAL_SPLIT = 2.15;  // envelope parting under the seal
-const FILM_END = 7.45;   // garden, just before the clip's own text appears
+const SEAL_SPLIT = 2.02;  // seal cracks along the seam
+const FILM_END = 7.15;   // garden, before the clip's own text starts to fade in
 // the clip's wax seal, in video pixels (720 × 1280)
-const SEAL_AT = { x: 358, y: 622, d: 184 };
+const SEAL_AT = { x: 358, y: 622, d: 196 };
+// where the two envelope doors' inner edges are as they slide apart:
+// [time, left edge x, right edge x] in video pixels, measured from the clip
+const DOOR_EDGES = [
+  [2.0, 357, 357], [2.1, 347, 370], [2.2, 340, 375], [2.3, 323, 389],
+  [2.4, 308, 401], [2.5, 279, 425], [2.6, 250, 446], [2.7, 226, 466],
+  [2.8, 181, 506], [2.9, 148, 539], [3.0, 98, 583], [3.4, -150, 860],
+];
+const SEAL_GONE = 3.35;  // doors have left the frame
 
 // put our seal over the clip's seal for an object-fit: cover crop
 function placeSeal() {
@@ -282,6 +290,29 @@ function placeSeal() {
   hero.style.setProperty("--sx", `${ox + SEAL_AT.x * k}px`);
   hero.style.setProperty("--sy", `${oy + SEAL_AT.y * k}px`);
   hero.style.setProperty("--sd", `${SEAL_AT.d * k}px`);
+  filmScale = k;
+}
+
+let filmScale = 1;
+
+function doorEdges(t) {
+  const e = DOOR_EDGES;
+  if (t <= e[0][0]) return [e[0][1], e[0][2]];
+  for (let i = 1; i < e.length; i++) {
+    if (t <= e[i][0]) {
+      const f = (t - e[i - 1][0]) / (e[i][0] - e[i - 1][0]);
+      return [e[i - 1][1] + (e[i][1] - e[i - 1][1]) * f, e[i - 1][2] + (e[i][2] - e[i - 1][2]) * f];
+    }
+  }
+  const last = e[e.length - 1];
+  return [last[1], last[2]];
+}
+
+// slide each half of our seal with its door
+function moveHalves(t) {
+  const [l, r] = doorEdges(t);
+  sealL.style.transform = `translateX(${(l - SEAL_AT.x) * filmScale}px)`;
+  sealR.style.transform = `translateX(${(r - SEAL_AT.x) * filmScale}px)`;
 }
 
 function goFullscreen() {
@@ -313,16 +344,25 @@ if (film.readyState >= 1) {
 addEventListener("resize", placeSeal);
 placeSeal();
 
+const sealL = document.querySelector(".seal-half.l");
+const sealR = document.querySelector(".seal-half.r");
+
 let audio = null;
+let sealCracked = false;
 let sealGone = false;
 let ended = false;
+
+function crackSeal() {
+  if (sealCracked) return;
+  sealCracked = true;
+  const r = $("seal").getBoundingClientRect();
+  fx.burst(r.left + r.width / 2, r.top + r.height / 2, 30, 5);
+}
 
 function liftSeal() {
   if (sealGone) return;
   sealGone = true;
-  const r = $("seal").getBoundingClientRect();
   body.classList.add("seal-off");
-  fx.burst(r.left + r.width / 2, r.top + r.height / 2, 40, 6);
 }
 
 function finish() {
@@ -342,7 +382,9 @@ function finish() {
 
 function watchFilm() {
   const t = film.currentTime;
-  if (t >= SEAL_SPLIT - 0.08) liftSeal();
+  moveHalves(t);
+  if (t >= SEAL_SPLIT) crackSeal();
+  if (t >= SEAL_GONE) liftSeal();
   if (t >= FILM_END) {
     finish();
     return;
@@ -361,7 +403,7 @@ $("seal").addEventListener("click", () => {
   const started = film.play();
   if (started && started.catch) {
     // if the browser refuses to play, still open the invitation
-    started.catch(() => { liftSeal(); finish(); });
+    started.catch(() => { crackSeal(); liftSeal(); finish(); });
   }
   requestAnimationFrame(watchFilm);
 }, { once: true });
