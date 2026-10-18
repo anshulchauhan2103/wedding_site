@@ -263,19 +263,19 @@ const hero = $("hero");
 const film = $("film");
 const body = document.body;
 
-// moments in opening.mp4 (seconds)
-const FILM_REST = 1.9;   // sealed envelope, still
-const SEAL_SPLIT = 2.4;  // envelope parting under the seal
+// moments in opening-portrait.mp4 (seconds)
+const FILM_REST = 1.6;   // sealed envelope, still
+const SEAL_SPLIT = 2.15;  // envelope parting under the seal
 const FILM_END = 7.45;   // garden, just before the clip's own text appears
-// the clip's wax seal, in video pixels (1280 × 720)
-const SEAL_AT = { x: 636, y: 357, d: 192 };
+// the clip's wax seal, in video pixels (720 × 1280)
+const SEAL_AT = { x: 358, y: 622, d: 184 };
 
 // put our seal over the clip's seal for an object-fit: cover crop
 function placeSeal() {
   const w = hero.clientWidth;
   const h = hero.clientHeight;
-  const vw = film.videoWidth || 1280;
-  const vh = film.videoHeight || 720;
+  const vw = film.videoWidth || 720;
+  const vh = film.videoHeight || 1280;
   const k = Math.max(w / vw, h / vh);
   const ox = (w - vw * k) / 2;
   const oy = (h - vh * k) / 2;
@@ -329,7 +329,9 @@ function finish() {
   if (ended) return;
   ended = true;
   film.pause();
-  if (film.readyState >= 1) film.currentTime = FILM_END;
+  // normally we stop right on the garden; if playback never got there
+  // (blocked or failed), fall back to the garden still behind the film
+  if (Math.abs(film.currentTime - FILM_END) > 0.4) film.classList.remove("ready");
   body.classList.add("revealed");
   fx.petals(60);
   setTimeout(() => {

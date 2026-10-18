@@ -118,10 +118,10 @@ body::after {
   min-height: 560px;
   overflow: hidden;
   /* still of the sealed envelope shows instantly, before the film has a frame */
-  background: #7d8b66 url("envelope.jpg") center / cover no-repeat;
+  background: #7d8b66 url("envelope-p.jpg") center / cover no-repeat;
 }
 
-.revealed .hero { background-image: url("garden.jpg"); }
+.revealed .hero { background-image: url("garden-p.jpg"); }
 
 .film {
   position: absolute;
