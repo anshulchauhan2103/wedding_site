@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Kishika &amp; Anshul — Wedding Invitation</title>
   <meta name="description" content="You're invited to the wedding of Kishika & Anshul · 27–28 January 2027 · Chandigarh.">
-  <meta name="theme-color" content="#5f7052">
+  <meta name="theme-color" content="#6f8160">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -24,25 +24,61 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Pinyon+Script&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="invite.css">
+  <link rel="preload" as="image" href="door.jpg">
+  <link rel="preload" as="image" href="curtain.png">
+  <link rel="preload" as="image" href="garden.png">
 </head>
 <body class="locked">
 
+  <!-- foil flakes -->
+  <canvas class="fx" id="fx" aria-hidden="true"></canvas>
+
   <!-- ───────── Closed doors (first screen) ───────── -->
   <div class="doors" id="doors">
-    <div class="door left"><span class="beads"></span></div>
-    <div class="door right"><span class="beads"></span></div>
+    <div class="door left">
+      <div class="door-face"><span class="frame"></span></div>
+      <span class="ribbon"></span>
+      <span class="edge"></span>
+      <span class="shade"></span>
+    </div>
+    <div class="door right">
+      <div class="door-face"><span class="frame"></span></div>
+      <span class="edge"></span>
+      <span class="shade"></span>
+    </div>
 
-    <button class="seal" id="seal" aria-label="Open the invitation">
-      <svg viewBox="0 0 140 140" aria-hidden="true">
-        <circle cx="70" cy="70" r="60" class="seal-scallop"/>
-        <circle cx="70" cy="70" r="60" class="seal-face"/>
-        <circle cx="70" cy="70" r="49" class="seal-ring"/>
-        <circle cx="70" cy="70" r="45" class="seal-ring thin"/>
-        <text x="70" y="78" class="seal-mono">K &amp; A</text>
-        <text x="70" y="100" class="seal-date">27 · 01 · 27</text>
-      </svg>
-    </button>
-    <p class="tap-hint">tap to open</p>
+    <div class="seal-wrap">
+      <button class="seal" id="seal" aria-label="Open the invitation">
+        <svg viewBox="0 0 160 160" aria-hidden="true">
+          <defs>
+            <radialGradient id="m-cream" cx="40%" cy="35%" r="75%">
+              <stop offset="0" stop-color="#fffaf0"/>
+              <stop offset=".6" stop-color="#f1e5cd"/>
+              <stop offset="1" stop-color="#d9c6a2"/>
+            </radialGradient>
+            <radialGradient id="m-scallop" cx="40%" cy="35%" r="70%">
+              <stop offset="0" stop-color="#fff9ec"/>
+              <stop offset=".7" stop-color="#ead9b8"/>
+              <stop offset="1" stop-color="#c9b083"/>
+            </radialGradient>
+            <linearGradient id="m-gold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#9c7a3c"/>
+              <stop offset=".35" stop-color="#e3c98e"/>
+              <stop offset=".6" stop-color="#a98545"/>
+              <stop offset="1" stop-color="#d9bd80"/>
+            </linearGradient>
+          </defs>
+          <g id="seal-scallops"></g>
+          <circle cx="80" cy="80" r="58" fill="url(#m-cream)" stroke="url(#m-gold)" stroke-width="1"/>
+          <g id="seal-lace"></g>
+          <circle cx="80" cy="80" r="45" fill="url(#m-cream)" stroke="url(#m-gold)" stroke-width="1.4"/>
+          <circle cx="80" cy="80" r="41" fill="none" stroke="url(#m-gold)" stroke-width=".6"/>
+          <text x="80" y="86" class="seal-mono" fill="url(#m-gold)">K &amp; A</text>
+          <text x="80" y="104" class="seal-date" fill="#9c7f4a">27 · 01 · 2027</text>
+        </svg>
+      </button>
+    </div>
+    <p class="tap-hint">Tap to open</p>
   </div>
 
   <button class="music" id="music" aria-label="Play music" hidden>
@@ -52,117 +88,46 @@
   <main class="invite">
 
     <!-- ───────── Hero: curtains + garden ───────── -->
-    <section class="hero">
-      <svg class="valance" viewBox="0 0 400 96" preserveAspectRatio="none" aria-hidden="true">
-        <path class="swag-back" d="M0 0H400V30Q350 96 300 30Q250 96 200 30Q150 96 100 30Q50 96 0 30Z"/>
-        <path class="swag" d="M0 0H400V18Q350 80 300 18Q250 80 200 18Q150 80 100 18Q50 80 0 18Z"/>
-        <path class="swag-trim" d="M0 18Q50 80 100 18Q150 80 200 18Q250 80 300 18Q350 80 400 18"/>
-      </svg>
-      <div class="drape left"><span class="tieback"></span></div>
-      <div class="drape right"><span class="tieback"></span></div>
+    <section class="hero" id="hero">
+      <img class="garden" src="garden.png" alt="" aria-hidden="true">
+      <span class="shimmer" aria-hidden="true"></span>
 
       <div class="hero-text">
-        <p class="seq blessing" style="--d:.9s">ॐ गणेशाय नमः</p>
-        <p class="seq eyebrow" style="--d:1.3s">We're getting married</p>
-        <div class="seq divider" style="--d:1.5s" aria-hidden="true"><span></span>♥<span></span></div>
-        <h1 class="seq name" style="--d:1.9s">Kishika</h1>
+        <div class="seq heart-top" style="--d:.2s" aria-hidden="true">♥</div>
+        <p class="seq eyebrow" style="--d:.4s">We're getting married</p>
+        <div class="seq divider" style="--d:.6s" aria-hidden="true"><span></span><i>♥</i><span></span></div>
+        <h1 class="name write" style="--d:.9s">Kishika</h1>
         <!-- TODO: parents' names -->
-        <p class="seq parents" style="--d:2.2s">Daughter of Mrs. &amp; Mr. ______</p>
-        <p class="seq amp" style="--d:2.5s">&amp;</p>
-        <h1 class="seq name" style="--d:2.8s">Anshul</h1>
-        <p class="seq parents" style="--d:3.1s">Son of Mrs. &amp; Mr. ______</p>
+        <p class="seq parents" style="--d:2s">Daughter of Mrs. &amp; Mr. ______</p>
+        <p class="seq amp" style="--d:2.2s">&amp;</p>
+        <h1 class="name write" style="--d:2.4s">Anshul</h1>
+        <p class="seq parents" style="--d:3.4s">Son of Mrs. &amp; Mr. ______</p>
       </div>
 
-      <svg class="garden" viewBox="0 0 400 230" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-        <defs>
-          <linearGradient id="g-ground" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#e6dcc6"/><stop offset="1" stop-color="#d9cdb2"/>
-          </linearGradient>
-          <linearGradient id="g-water" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#cfe2e0"/><stop offset="1" stop-color="#9fc0bd"/>
-          </linearGradient>
-          <linearGradient id="g-stone" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#f7f1e6"/><stop offset="1" stop-color="#ddd1bb"/>
-          </linearGradient>
-          <g id="cypress">
-            <path d="M0 0C-14-34-12-92 0-128C12-92 14-34 0 0Z" fill="#53664a"/>
-            <path d="M0 0C-5-34-4-92 0-128C6-92 8-34 0 0Z" fill="#6c8160"/>
-          </g>
-          <g id="bush">
-            <ellipse cx="0" cy="0" rx="30" ry="16" fill="#71865f"/>
-            <ellipse cx="-14" cy="-6" rx="13" ry="7" fill="#869b70" transform="rotate(-20 -14 -6)"/>
-            <ellipse cx="15" cy="-5" rx="13" ry="7" fill="#869b70" transform="rotate(18 15 -5)"/>
-            <circle cx="-16" cy="-10" r="7" fill="#f1d9cc"/><circle cx="-16" cy="-10" r="3.2" fill="#e3b4a3"/>
-            <circle cx="0" cy="-14" r="8" fill="#e9b8a8"/><circle cx="0" cy="-14" r="3.6" fill="#d8968a"/>
-            <circle cx="16" cy="-9" r="6.5" fill="#f5e6da"/><circle cx="16" cy="-9" r="3" fill="#e8c7b6"/>
-            <circle cx="-4" cy="-2" r="5" fill="#f5e6da"/><circle cx="8" cy="0" r="4.5" fill="#e9b8a8"/>
-          </g>
-        </defs>
+      <img class="curtain left" src="curtain.png" alt="" aria-hidden="true">
+      <img class="curtain right" src="curtain-r.png" alt="" aria-hidden="true">
 
-        <path d="M0 160Q200 138 400 160V230H0Z" fill="url(#g-ground)"/>
-
-        <!-- balustrade -->
-        <g class="balustrade">
-          <rect x="0" y="146" width="128" height="6" rx="2"/>
-          <rect x="272" y="146" width="128" height="6" rx="2"/>
-          <g fill="#efe6d4">
-            <rect x="8" y="152" width="6" height="18"/><rect x="26" y="152" width="6" height="18"/><rect x="44" y="152" width="6" height="18"/><rect x="62" y="152" width="6" height="18"/><rect x="80" y="152" width="6" height="18"/><rect x="98" y="152" width="6" height="18"/><rect x="116" y="152" width="6" height="18"/>
-            <rect x="278" y="152" width="6" height="18"/><rect x="296" y="152" width="6" height="18"/><rect x="314" y="152" width="6" height="18"/><rect x="332" y="152" width="6" height="18"/><rect x="350" y="152" width="6" height="18"/><rect x="368" y="152" width="6" height="18"/><rect x="386" y="152" width="6" height="18"/>
-          </g>
-        </g>
-
-        <use href="#cypress" x="34" y="180"/>
-        <use href="#cypress" x="92" y="172" transform="scale(1)"/>
-        <use href="#cypress" x="308" y="172"/>
-        <use href="#cypress" x="366" y="180"/>
-
-        <!-- fountain -->
-        <g class="fountain">
-          <ellipse cx="200" cy="204" rx="92" ry="17" fill="url(#g-stone)"/>
-          <ellipse cx="200" cy="200" rx="84" ry="13" fill="url(#g-water)"/>
-          <path d="M108 204v9q92 22 184 0v-9q-92 22-184 0Z" fill="#ddd1bb"/>
-          <rect x="193" y="146" width="14" height="56" rx="3" fill="url(#g-stone)"/>
-          <ellipse cx="200" cy="148" rx="34" ry="7" fill="url(#g-stone)"/>
-          <ellipse cx="200" cy="146" rx="29" ry="4.5" fill="url(#g-water)"/>
-          <path d="M166 148q34 14 68 0l-4 6q-30 10-60 0Z" fill="#ddd1bb"/>
-          <rect x="197" y="118" width="6" height="28" rx="2" fill="url(#g-stone)"/>
-          <circle cx="200" cy="116" r="5" fill="#f7f1e6"/>
-          <g class="jets" fill="none" stroke="#d7ebea" stroke-width="2" stroke-linecap="round">
-            <path d="M200 112q-20-14-30 34"/>
-            <path d="M200 112q20-14 30 34"/>
-            <path d="M172 150q-14 8-26 46"/>
-            <path d="M228 150q14 8 26 46"/>
-          </g>
-        </g>
-
-        <use href="#bush" x="44" y="198"/>
-        <use href="#bush" x="96" y="214"/>
-        <use href="#bush" x="304" y="214"/>
-        <use href="#bush" x="356" y="198"/>
-        <use href="#bush" x="8" y="222"/>
-        <use href="#bush" x="392" y="222"/>
-      </svg>
-
-      <p class="scroll-hint">scroll<span></span></p>
+      <div class="scroll-cue" aria-hidden="true"><span></span></div>
     </section>
 
     <!-- ───────── Blessing ───────── -->
     <section class="block reveal">
       <p class="lead">With the blessings of our families, we warmly invite you to celebrate the beginning of our journey together.</p>
       <p class="lead">Your presence would mean the world to us.</p>
-      <div class="divider" aria-hidden="true"><span></span>♥<span></span></div>
+      <div class="divider" aria-hidden="true"><span></span><i>♥</i><span></span></div>
     </section>
 
     <!-- ───────── Scratch to reveal ───────── -->
     <section class="block reveal">
       <h2 class="title">Scratch to Reveal</h2>
-      <div class="divider" aria-hidden="true"><span></span>♥<span></span></div>
+      <div class="divider" aria-hidden="true"><span></span><i>♥</i><span></span></div>
 
       <div class="scratch" id="scratch">
-        <svg class="scratch-outline" viewBox="-8 -8 276 252" aria-hidden="true">
-          <path d="M130 232C60 180 0 140 0 72C0 30 32 0 72 0C100 0 120 16 130 36C140 16 160 0 188 0C228 0 260 30 260 72C260 140 200 180 130 232Z"/>
-        </svg>
         <div class="scratch-heart">
+          <svg class="heart-lines" viewBox="0 0 260 236" aria-hidden="true">
+            <path d="M130 220C66 172 14 136 14 76C14 40 41 15 74 15C100 15 119 30 130 50C141 30 160 15 186 15C219 15 246 40 246 76C246 136 194 172 130 220Z"/>
+            <path class="thin" d="M130 210C71 165 23 131 23 77C23 45 47 23 75 23C99 23 117 37 130 58C143 37 161 23 185 23C213 23 237 45 237 77C237 131 189 165 130 210Z"/>
+          </svg>
           <div class="scratch-under">
             <p class="su-small">Save the date</p>
             <p class="su-date">27 &amp; 28</p>
@@ -183,7 +148,7 @@
     <!-- TODO: drop photos into invite/photos/ as 1.jpg, 2.jpg, 3.jpg -->
     <section class="block reveal">
       <h2 class="title">Our Moments</h2>
-      <div class="divider" aria-hidden="true"><span></span>♥<span></span></div>
+      <div class="divider" aria-hidden="true"><span></span><i>♥</i><span></span></div>
       <div class="gallery" id="gallery">
         <figure><img src="photos/1.jpg" alt="Kishika and Anshul" loading="lazy"></figure>
         <figure><img src="photos/2.jpg" alt="Kishika and Anshul" loading="lazy"></figure>
@@ -195,7 +160,7 @@
     <!-- ───────── Countdown ───────── -->
     <section class="block reveal">
       <h2 class="title">Counting Down to Forever</h2>
-      <div class="divider" aria-hidden="true"><span></span>♥<span></span></div>
+      <div class="divider" aria-hidden="true"><span></span><i>♥</i><span></span></div>
       <div class="countdown" id="countdown">
         <div><b id="cd-days">—</b><span>days</span></div>
         <div><b id="cd-hours">—</b><span>hours</span></div>
@@ -208,8 +173,8 @@
     <!-- TODO: event names, dates, times -->
     <section class="block reveal">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-      <h2 class="title">Celebrations</h2>
-      <div class="divider" aria-hidden="true"><span></span>♥<span></span></div>
+      <h2 class="title">Program Timeline</h2>
+      <div class="divider" aria-hidden="true"><span></span><i>♥</i><span></span></div>
       <ol class="timeline">
         <li>
           <h3>Event name</h3>
@@ -234,7 +199,7 @@
     <section class="block reveal">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
       <h2 class="title">Venue</h2>
-      <div class="divider" aria-hidden="true"><span></span>♥<span></span></div>
+      <div class="divider" aria-hidden="true"><span></span><i>♥</i><span></span></div>
       <p class="venue-name">Venue name</p>
       <p class="muted">Chandigarh</p>
       <div class="map">
@@ -242,7 +207,7 @@
       </div>
       <a class="btn" href="https://maps.google.com/?q=Chandigarh" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg>
-        Open in Google Maps
+        View on Google Maps
       </a>
     </section>
 
@@ -250,7 +215,7 @@
     <section class="block reveal">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6a2 2 0 1 1 2-2M12 6v2L3 15h18l-9-7"/></svg>
       <h2 class="title">Dress Code</h2>
-      <div class="divider" aria-hidden="true"><span></span>♥<span></span></div>
+      <div class="divider" aria-hidden="true"><span></span><i>♥</i><span></span></div>
       <div class="pair">
         <div><h3>Women</h3><p class="muted">To be shared</p></div>
         <div><h3>Men</h3><p class="muted">To be shared</p></div>
@@ -260,8 +225,8 @@
     <!-- ───────── Travel & stay ───────── -->
     <section class="block reveal">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V4h6v3M4 12h16"/></svg>
-      <h2 class="title">Travel &amp; Stay</h2>
-      <div class="divider" aria-hidden="true"><span></span>♥<span></span></div>
+      <h2 class="title">Accommodation</h2>
+      <div class="divider" aria-hidden="true"><span></span><i>♥</i><span></span></div>
       <p class="muted">Details about travel and accommodation will be shared soon.</p>
     </section>
 
@@ -269,7 +234,7 @@
     <section class="block reveal">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="9" width="18" height="12" rx="1"/><path d="M3 13h18M12 9v12M12 9S10.5 4 8 4.5 7.5 9 12 9Zm0 0s1.5-5 4-4.5S16.5 9 12 9Z"/></svg>
       <h2 class="title">Gifts</h2>
-      <div class="divider" aria-hidden="true"><span></span>♥<span></span></div>
+      <div class="divider" aria-hidden="true"><span></span><i>♥</i><span></span></div>
       <p class="lead">Your love and blessings are the greatest gift we could ask for.</p>
     </section>
 
