@@ -287,10 +287,8 @@ body::after {
 
 .hero {
   position: relative;
-  container-type: inline-size;
-  display: flex;
-  flex-direction: column;
-  min-height: var(--vh);
+  height: var(--vh);
+  min-height: 640px;
   overflow: hidden;
   background:
     radial-gradient(80% 55% at 50% 42%, #fffdf6 0%, rgba(255, 253, 246, 0) 70%),
@@ -303,60 +301,75 @@ body::after {
   transition: transform 3.4s cubic-bezier(0.2, 0.65, 0.2, 1) 0.4s;
 }
 
-/* the curtain set is split down the middle so each half can gather to its side;
-   --cw is the set's width as a share of the screen (outer edges run off-screen) */
+.garden,
 .curtain {
-  --cw: 1.7;
   position: absolute;
-  top: 0;
-  width: 50%;
-  height: calc(var(--cw) * 100cqw * 637 / 1080);
-  z-index: 4;
-  overflow: hidden;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   pointer-events: none;
+}
+
+.garden {
+  bottom: 0;
+  z-index: 1;
+  transform: translateY(13%);
+  object-position: 50% 100%;
+}
+
+/* soft glint moving across the fountain water */
+.shimmer {
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  bottom: 2%;
+  height: 7%;
+  z-index: 2;
+  border-radius: 50%;
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%) 0 0 / 250% 100%;
+  mix-blend-mode: soft-light;
+  animation: glimmer 3.5s ease-in-out infinite;
+}
+
+@keyframes glimmer {
+  from { background-position: 120% 0; }
+  to { background-position: -120% 0; }
+}
+
+.curtain {
+  top: 0;
+  z-index: 4;
+  object-position: 0 0;
+  filter: drop-shadow(6px 0 10px rgba(90, 76, 50, 0.22));
   transition: transform 3s cubic-bezier(0.6, 0.02, 0.2, 1);
 }
 
-.curtain img {
-  position: absolute;
-  top: 0;
-  width: calc(var(--cw) * 200%);
-  height: auto;
-  filter: drop-shadow(0 6px 10px rgba(90, 76, 50, 0.18));
-}
-
 .curtain.left {
-  left: 0;
-  transform-origin: 0 0;
-  transform: scaleX(3);
+  transform-origin: 0 50%;
+  transform: scaleX(0.86);
 }
-
-.curtain.left img { left: calc(100% - var(--cw) * 100%); }
 
 .curtain.right {
-  right: 0;
-  transform-origin: 100% 0;
-  transform: scaleX(3);
+  transform-origin: 100% 50%;
+  transform: scaleX(0.86);
+  filter: drop-shadow(-6px 0 10px rgba(90, 76, 50, 0.22));
 }
 
-.curtain.right img { left: calc(var(--cw) * -100%); }
+.parting .curtain { transform: scaleX(0.44); }
 
-.parting .curtain { transform: none; }
+.parting .curtain {
+  animation: settle 2.4s ease-in-out 3s;
+}
 
-.garden {
-  position: relative;
-  z-index: 5;
-  align-self: center;
-  width: 86cqw;
-  max-width: 410px;
-  margin: auto 0 -1cqw;
-  pointer-events: none;
+@keyframes settle {
+  50% { translate: 0 0.4%; }
 }
 
 .hero-text {
   position: relative;
-  z-index: 6;
-  padding: calc(27cqw + max(0px, (var(--vh) - 178cqw) * 0.45)) 6cqw 4cqw;
+  z-index: 3;
+  padding: clamp(140px, 21vh, 190px) 30px 0;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -375,13 +388,13 @@ body::after {
 }
 
 .heart-top {
-  font-size: 4cqw;
+  font-size: 16px;
   color: var(--script);
-  margin-bottom: 1cqw;
+  margin-bottom: 4px;
 }
 
 .eyebrow {
-  font-size: 5.1cqw;
+  font-size: 20px;
   font-style: italic;
   color: var(--ink-soft);
 }
@@ -389,7 +402,7 @@ body::after {
 .name {
   font-family: "Pinyon Script", cursive;
   font-weight: 400;
-  font-size: 13cqw;
+  font-size: min(14vw, 7.4vh, 58px);
   line-height: 1.4;
   padding: 0 0.35em;
   color: var(--script);
@@ -417,17 +430,17 @@ body::after {
 }
 
 .parents {
-  font-size: 3.85cqw;
+  font-size: 15px;
   font-style: italic;
   color: var(--ink-soft);
-  margin-top: -1.5cqw;
+  margin-top: -6px;
 }
 
 .amp {
   font-family: "Pinyon Script", cursive;
-  font-size: 9.2cqw;
+  font-size: 36px;
   line-height: 1;
-  margin: 2.5cqw 0 -0.5cqw;
+  margin: 10px 0 -2px;
   color: var(--gold);
 }
 
@@ -927,7 +940,7 @@ footer.block {
 
 @media (prefers-reduced-motion: reduce) {
   .door, .hero, .shade, .reveal > * { transition-duration: 0.01s !important; transition-delay: 0s !important; }
-  .seal, .tap-hint, .btn::after { animation: none !important; }
+  .seal, .tap-hint, .btn::after, .shimmer { animation: none !important; }
   .curtain { transition-duration: 0.01s !important; }
   .revealed .seq, .revealed .write { animation-duration: 0.01s !important; animation-delay: 0s !important; }
 }
