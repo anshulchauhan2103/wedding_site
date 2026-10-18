@@ -216,7 +216,7 @@ body::after {
 
 .playing .seal { pointer-events: none; }
 
-.seal-off .seal { opacity: 0; transition: opacity 0.35s ease; }
+.seal-off .seal { visibility: hidden; }
 
 
 .tap-hint {

@@ -309,14 +309,29 @@ function doorEdges(t) {
   return [last[1], last[2]];
 }
 
-// slide each half of our seal with its door
-function moveHalves(t) {
-  const [l, r] = doorEdges(t);
-  sealL.style.transform = `translateX(${(l - SEAL_AT.x) * filmScale}px)`;
-  sealR.style.transform = `translateX(${(r - SEAL_AT.x) * filmScale}px)`;
-  const fade = Math.max(0, Math.min(1, (SEAL_GONE - t) / 0.45));
-  sealL.style.opacity = sealR.style.opacity = fade;
+// Slide each half of our seal with its door. This runs as a single smooth
+// animation started when playback begins, rather than chasing the video's
+// reported time, which many phones only update a few times a second.
+function animateHalves(from) {
+  const end = SEAL_GONE;
+  const span = Math.max(0.1, end - from);
+  const frames = (side) => {
+    const out = [];
+    const points = [[from, ...doorEdges(from)], ...DOOR_EDGES.filter(([t]) => t > from && t < end), [end, ...doorEdges(end)]];
+    for (const [t, l, r] of points) {
+      const x = (side ? r : l) - SEAL_AT.x;
+      const offset = (t - from) / span;
+      // fully visible until the last 0.45s, then fade away
+      const opacity = Math.max(0, Math.min(1, (end - t) / 0.45));
+      out.push({ offset, transform: `translateX(${x * filmScale}px)`, opacity });
+    }
+    return out;
+  };
+  const opts = { duration: span * 1000, easing: "linear", fill: "forwards" };
+  sealL.animate(frames(0), opts);
+  sealR.animate(frames(1), opts).onfinish = liftSeal;
 }
+
 
 function goFullscreen() {
   const request = root.requestFullscreen || root.webkitRequestFullscreen;
@@ -399,9 +414,6 @@ function finish() {
 function watchFilm(e) {
   if (ended) return;
   const t = film.currentTime;
-  moveHalves(t);
-  if (t >= SEAL_SPLIT) crackSeal();
-  if (t >= SEAL_GONE) liftSeal();
 
   // ease the film to a stop instead of freezing it mid-motion
   const left = FILM_END - t;
@@ -435,11 +447,18 @@ $("seal").addEventListener("click", () => {
   requestAnimationFrame(watchFilm);
   film.addEventListener("timeupdate", watchFilm);
 
+  // start the seal's split exactly when frames begin moving
+  film.addEventListener("playing", () => {
+    const from = film.currentTime;
+    animateHalves(from);
+    setTimeout(crackSeal, Math.max(0, (SEAL_SPLIT - from) * 1000));
+  }, { once: true });
+
   // wall-clock backstops: some phones report currentTime late or not at all,
   // so the seal and the ending never wait on the film alone
   const ms = (t) => (t - FILM_REST) * 1000;
   setTimeout(crackSeal, ms(SEAL_SPLIT) + 300);
-  setTimeout(liftSeal, ms(SEAL_GONE) + 300);
+  setTimeout(liftSeal, ms(SEAL_GONE) + 2500);
   // only cut to the ending if the film has genuinely stalled
   let lastT = -1;
   let stuckFor = 0;
