@@ -272,29 +272,102 @@ body::after {
   to { opacity: 1; transform: none; filter: blur(0); }
 }
 
-.heart-top {
-  font-size: 16px;
-  color: var(--script);
-  margin-bottom: 4px;
+
+
+
+/* names "write" themselves in, left to right */
+/* names styled like the film's own lettering: dark-green caption, gold script */
+.eyebrow {
+  font-size: clamp(19px, 5.4vw, 24px);
+  font-weight: 500;
+  color: #3d4a2f;
+  text-shadow: 0 0 12px rgba(255, 250, 235, 0.9);
 }
 
-.eyebrow {
-  font-size: 20px;
-  font-style: italic;
-  color: var(--ink-soft);
+.names {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  margin-top: 4px;
+  font-weight: 400;
+  line-height: 1;
 }
 
 .name {
+  display: block;
   font-family: "Pinyon Script", cursive;
-  font-weight: 400;
-  font-size: min(14vw, 7.4vh, 58px);
-  line-height: 1.4;
-  padding: 0 0.35em;
-  color: var(--script);
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8), 0 3px 8px rgba(60, 70, 50, 0.12);
+  font-size: clamp(56px, 17vw, 80px);
+  line-height: 1.25;
+  padding: 0 0.3em;
+  background: linear-gradient(100deg, #a9813a 0%, #e4c27a 30%, #fff1c4 45%, #d4ad5f 62%, #a37a35 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 2px rgba(70, 50, 15, 0.35)) drop-shadow(0 0 10px rgba(255, 248, 225, 0.6));
 }
 
-/* names "write" themselves in, left to right */
+.n1 { text-align: left; padding-left: 4%; }
+.n2 { text-align: right; padding-right: 4%; margin-top: -0.32em; }
+
+.amp {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  transform: translateX(-50%);
+  font-family: "Pinyon Script", cursive;
+  font-size: clamp(40px, 12vw, 56px);
+  color: #d9b86a;
+  filter: drop-shadow(0 1px 2px rgba(70, 50, 15, 0.4));
+}
+
+.parents-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  width: 100%;
+  max-width: 340px;
+  margin-top: 14px;
+}
+
+.parents-row p,
+.date-row span,
+.venue {
+  font-family: "Jost", sans-serif;
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #4a4a36;
+  text-shadow: 0 0 8px rgba(255, 250, 235, 0.95);
+}
+
+.parents-row b {
+  display: block;
+  font-weight: 500;
+  color: #8b6a2c;
+  margin-bottom: 2px;
+}
+
+.date-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 16px;
+  padding: 6px 0;
+  border-top: 1px solid rgba(180, 140, 72, 0.6);
+  border-bottom: 1px solid rgba(180, 140, 72, 0.6);
+}
+
+.date-row b {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 30px;
+  font-weight: 600;
+  color: #b08840;
+  text-shadow: 0 0 8px rgba(255, 250, 235, 0.95);
+}
+
+.venue { margin-top: 10px; }
+
 .write {
   opacity: 0;
   -webkit-mask-image: linear-gradient(90deg, #000 40%, transparent 60%);
@@ -314,20 +387,7 @@ body::after {
   to { opacity: 1; -webkit-mask-position: 0 0; mask-position: 0 0; }
 }
 
-.parents {
-  font-size: 15px;
-  font-style: italic;
-  color: var(--ink-soft);
-  margin-top: -6px;
-}
 
-.amp {
-  font-family: "Pinyon Script", cursive;
-  font-size: 36px;
-  line-height: 1;
-  margin: 10px 0 -2px;
-  color: var(--gold);
-}
 
 .scroll-cue {
   position: absolute;

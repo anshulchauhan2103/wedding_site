@@ -313,6 +313,8 @@ function moveHalves(t) {
   const [l, r] = doorEdges(t);
   sealL.style.transform = `translateX(${(l - SEAL_AT.x) * filmScale}px)`;
   sealR.style.transform = `translateX(${(r - SEAL_AT.x) * filmScale}px)`;
+  const fade = Math.max(0, Math.min(1, (SEAL_GONE - t) / 0.45));
+  sealL.style.opacity = sealR.style.opacity = fade;
 }
 
 function goFullscreen() {
@@ -368,6 +370,8 @@ function liftSeal() {
 function finish() {
   if (ended) return;
   ended = true;
+  crackSeal();
+  liftSeal();
   film.pause();
   // normally we stop right on the garden; if playback never got there
   // (blocked or failed), fall back to the garden still behind the film
@@ -380,7 +384,8 @@ function finish() {
   }, 900);
 }
 
-function watchFilm() {
+function watchFilm(e) {
+  if (ended) return;
   const t = film.currentTime;
   moveHalves(t);
   if (t >= SEAL_SPLIT) crackSeal();
@@ -389,7 +394,7 @@ function watchFilm() {
     finish();
     return;
   }
-  requestAnimationFrame(watchFilm);
+  if (!e) requestAnimationFrame(watchFilm);
 }
 
 $("seal").addEventListener("click", () => {
@@ -400,12 +405,21 @@ $("seal").addEventListener("click", () => {
 
   // skip the still opening frames if Safari never seeked there
   if (film.readyState >= 1 && film.currentTime < FILM_REST - 0.05) film.currentTime = FILM_REST;
+  film.classList.add("ready");
   const started = film.play();
   if (started && started.catch) {
     // if the browser refuses to play, still open the invitation
     started.catch(() => { crackSeal(); liftSeal(); finish(); });
   }
   requestAnimationFrame(watchFilm);
+  film.addEventListener("timeupdate", watchFilm);
+
+  // wall-clock backstops: some phones report currentTime late or not at all,
+  // so the seal and the ending never wait on the film alone
+  const ms = (t) => (t - FILM_REST) * 1000;
+  setTimeout(crackSeal, ms(SEAL_SPLIT) + 300);
+  setTimeout(liftSeal, ms(SEAL_GONE) + 300);
+  setTimeout(finish, ms(FILM_END) + 1500);
 }, { once: true });
 
 film.addEventListener("ended", finish);
