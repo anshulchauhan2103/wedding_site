@@ -77,300 +77,6 @@ body::after {
   overflow: hidden;
 }
 
-/* ───────── Shagun envelope ───────── */
-
-.env-layer {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4.5vh;
-  pointer-events: none;
-}
-
-/* back of the envelope + backdrop, behind the hero */
-.env-under {
-  z-index: 40;
-  overflow: hidden;
-  background:
-    radial-gradient(60% 45% at 50% 46%, #fffaf0 0%, rgba(255, 250, 240, 0) 70%),
-    radial-gradient(120% 90% at 50% 50%, #f6eee0 0%, #eadcc2 100%);
-  transition: opacity 1.2s ease 0.3s;
-}
-
-.env-under::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 46%;
-  width: 150vmin;
-  height: 150vmin;
-  transform: translate(-50%, -50%);
-  background: url("mandala.png") center / contain no-repeat;
-  opacity: 0.07;
-}
-
-.env-under .tap-hint { visibility: hidden; }
-
-/* pocket, closed flap and seal, in front of the hero */
-.env-over { z-index: 60; }
-
-.env {
-  --w: min(80vw, 58vh, 380px);
-  position: relative;
-  width: var(--w);
-  height: calc(var(--w) * 1.42);
-  perspective: 1300px;
-  transition: transform 1.3s cubic-bezier(0.55, 0, 0.3, 1), opacity 1s ease;
-}
-
-.env-under .env {
-  filter: drop-shadow(0 26px 30px rgba(90, 60, 30, 0.22)) drop-shadow(0 4px 6px rgba(90, 60, 30, 0.18));
-  animation: env-in 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-.env-over .env { animation: env-in 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-
-@keyframes env-in {
-  from { opacity: 0; transform: translateY(24px) scale(0.96); }
-}
-
-/* champagne raw silk: the silk weave recoloured ivory-gold, lit from the top left */
-.env-back,
-.env-front,
-.flap-out {
-  background:
-    linear-gradient(155deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 45%, rgba(120, 80, 30, 0.16)),
-    linear-gradient(rgba(250, 236, 205, 0.7), rgba(250, 236, 205, 0.7)),
-    linear-gradient(#f0d9a6, #f0d9a6),
-    url("silk.jpg") center / 110% auto;
-  background-blend-mode: normal, normal, luminosity, normal;
-}
-
-.env-back {
-  position: absolute;
-  inset: 0;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-/* inside of the envelope: deep maroon silk */
-.liner,
-.flap-in {
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0) 35%),
-    linear-gradient(rgba(96, 8, 22, 0.42), rgba(96, 8, 22, 0.42)),
-    url("silk.jpg") center / 110% auto;
-}
-
-.liner {
-  position: absolute;
-  left: 4%;
-  right: 4%;
-  top: 2.5%;
-  height: 60%;
-}
-
-.env-front {
-  position: absolute;
-  inset: 0;
-  border-radius: 3px;
-  clip-path: polygon(0 0, 50% 53.5%, 100% 0, 100% 100%, 0 100%);
-}
-
-.env-front::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(to bottom right, transparent 49.4%, rgba(90, 60, 20, 0.2) 50%, transparent 56%) 0 0 / 50% 53.5% no-repeat,
-    linear-gradient(to bottom left, transparent 49.4%, rgba(90, 60, 20, 0.2) 50%, transparent 56%) 100% 0 / 50% 53.5% no-repeat;
-}
-
-.zari {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.zari path {
-  fill: none;
-  stroke: #b8904a;
-  stroke-width: 2.2;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-  filter: drop-shadow(0 1px 0 rgba(255, 250, 235, 0.8));
-}
-
-.zari path.fine {
-  stroke: #a77f3c;
-  stroke-width: 1;
-  stroke-dasharray: 1 3;
-  stroke-linecap: round;
-}
-
-.env-flap {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 56.5%;
-  transform-origin: 50% 0;
-  transform-style: preserve-3d;
-  transition: transform 1.25s cubic-bezier(0.55, 0, 0.25, 1);
-}
-
-.flap-face {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 100%;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  clip-path: polygon(0 0, 100% 0, 100% 3%, 53% 97%, 50% 100%, 47% 97%, 0 3%);
-}
-
-.flap-out { box-shadow: inset 0 -30px 40px rgba(110, 76, 30, 0.16); }
-.flap-in { transform: rotateX(180deg); }
-
-.flap-static { height: 56.5%; }
-
-.flap-open .flap-static { visibility: hidden; }
-.flap-open .env-flap { transform: rotateX(178deg); }
-
-.seal {
-  position: absolute;
-  left: 50%;
-  top: 56.5%;
-  width: 36%;
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  border: 0;
-  padding: 0;
-  background: none;
-  cursor: pointer;
-  pointer-events: auto;
-  filter: drop-shadow(0 6px 8px rgba(70, 40, 10, 0.4));
-}
-
-.seal img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  animation: seal-turn 40s linear infinite;
-}
-
-.seal span {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 42%;
-  height: 42%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-top: 4%;
-  background: radial-gradient(circle at 38% 32%, #9a2230, #5e0b17 70%);
-  box-shadow: 0 0 0 1.5px #d9b766, inset 0 2px 4px rgba(255, 210, 170, 0.25), inset 0 -3px 6px rgba(0, 0, 0, 0.35);
-  font-family: "Pinyon Script", cursive;
-  font-size: calc(var(--w) * 0.058);
-  color: #f1d796;
-  white-space: nowrap;
-}
-
-.seal span i {
-  font-style: normal;
-  font-size: 0.8em;
-  margin: 0 0.05em;
-}
-
-.seal::after {
-  content: "";
-  position: absolute;
-  inset: 8%;
-  border-radius: 50%;
-  background: linear-gradient(115deg, transparent 35%, rgba(255, 248, 220, 0.55) 50%, transparent 65%) 0 0 / 300% 100%;
-  mix-blend-mode: soft-light;
-  animation: glint-pass 3.6s ease-in-out infinite;
-}
-
-@keyframes glint-pass {
-  0%, 35% { background-position: 120% 0; }
-  100% { background-position: -120% 0; }
-}
-
-@keyframes seal-turn { to { transform: rotate(360deg); } }
-
-.opening .seal {
-  animation: seal-lift 0.75s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  pointer-events: none;
-}
-
-@keyframes seal-lift {
-  0% { transform: translate(-50%, -50%) scale(1); }
-  20% { transform: translate(-50%, -50%) scale(0.92); }
-  100% { transform: translate(-50%, -62%) scale(1.25); opacity: 0; filter: blur(6px); }
-}
-
-/* the hero doubles as the invitation card while it is inside the envelope */
-.locked .hero {
-  z-index: 45;
-  visibility: hidden;
-  transform-origin: 0 0;
-  border-radius: 6px;
-  box-shadow:
-    0 0 0 calc(4px / var(--s, 1)) #fbf5e8,
-    0 0 0 calc(5px / var(--s, 1)) #c9a55c,
-    0 calc(8px / var(--s, 1)) calc(22px / var(--s, 1)) rgba(70, 40, 10, 0.3);
-}
-
-.card-showing .hero { visibility: visible; }
-
-.hero.moving {
-  transition:
-    transform 1.3s cubic-bezier(0.3, 0.6, 0.2, 1),
-    border-radius 1.3s ease,
-    box-shadow 1.3s ease;
-}
-
-.hero.full {
-  border-radius: 0;
-  box-shadow: none;
-}
-
-/* envelope sinks away while the card grows into the screen */
-.env-away .env { transform: translateY(85vh); opacity: 0; }
-.env-away .env-under { opacity: 0; }
-.env-away .tap-hint { opacity: 0; }
-
-.tap-hint {
-  position: relative;
-  font-family: "Cormorant Garamond", serif;
-  font-size: 18px;
-  font-style: italic;
-  letter-spacing: 0.04em;
-  color: #7a5a3a;
-  animation: breathe 3.2s ease-in-out infinite;
-}
-
-.opening .tap-hint {
-  animation: none;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-@keyframes breathe {
-  0%, 100% { opacity: 0.45; }
-  50% { opacity: 1; }
-}
-
 /* ───────── Music toggle ───────── */
 
 .music {
@@ -409,82 +115,142 @@ body::after {
 .hero {
   position: relative;
   height: var(--vh);
-  min-height: 640px;
+  min-height: 560px;
   overflow: hidden;
-  background:
-    radial-gradient(80% 55% at 50% 42%, #fffdf6 0%, rgba(255, 253, 246, 0) 70%),
-    linear-gradient(180deg, #f3ebdc 0%, #f8f3e8 55%, #efe5d2 100%);
+  background: #7d8b66;
 }
 
-.garden,
-.curtain {
+.film {
   position: absolute;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  pointer-events: none;
+  object-position: 50% 50%;
+  opacity: 0;
+  transition: opacity 0.8s ease;
 }
 
-.garden {
-  bottom: 0;
-  z-index: 1;
-  transform: translateY(13%);
-  object-position: 50% 100%;
-}
+.film.ready { opacity: 1; }
 
-/* soft glint moving across the fountain water */
-.shimmer {
+/* soft light behind the text once the film settles on the garden */
+.film-veil {
   position: absolute;
-  left: 30%;
-  right: 30%;
-  bottom: 2%;
-  height: 7%;
-  z-index: 2;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(75% 42% at 50% 34%, rgba(255, 250, 238, 0.82), rgba(255, 250, 238, 0.45) 55%, rgba(255, 250, 238, 0) 80%),
+    linear-gradient(180deg, rgba(255, 250, 238, 0.35), rgba(255, 250, 238, 0) 60%);
+  transition: opacity 1.6s ease;
+}
+
+.revealed .film-veil { opacity: 1; }
+
+/* our seal sits exactly over the film's wax seal (placed from JS) */
+.seal {
+  position: absolute;
+  z-index: 5;
+  left: var(--sx, 50%);
+  top: var(--sy, 53%);
+  width: var(--sd, 46vw);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  filter: drop-shadow(0 6px 10px rgba(30, 40, 20, 0.45));
+}
+
+.seal {
   border-radius: 50%;
-  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%) 0 0 / 250% 100%;
-  mix-blend-mode: soft-light;
-  animation: glimmer 3.5s ease-in-out infinite;
+  background:
+    radial-gradient(circle at 42% 36%, #f1dcab 0%, #e2c487 38%, #cfac6c 70%, #b8935a 100%);
+  box-shadow:
+    inset 0 3px 6px rgba(255, 244, 214, 0.55),
+    inset 0 -4px 9px rgba(110, 76, 30, 0.45),
+    0 0 0 1px rgba(150, 112, 56, 0.35);
 }
 
-@keyframes glimmer {
-  from { background-position: 120% 0; }
-  to { background-position: -120% 0; }
+/* fine ornamental ring pressed into the wax */
+.seal-ring {
+  position: absolute;
+  inset: 9%;
+  border-radius: 50%;
+  border: 1.5px dotted rgba(110, 80, 34, 0.7);
+  box-shadow:
+    0 0 0 3px rgba(110, 80, 34, 0) ,
+    inset 0 0 0 4px rgba(110, 80, 34, 0),
+    inset 0 0 0 5px rgba(110, 80, 34, 0.45),
+    0 1px 0 rgba(255, 244, 214, 0.5);
 }
 
-.curtain {
-  top: 0;
-  z-index: 4;
-  object-position: 0 0;
-  filter: drop-shadow(6px 0 10px rgba(90, 76, 50, 0.22));
-  transition: transform 3s cubic-bezier(0.6, 0.02, 0.2, 1);
+.seal-mono {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 6%;
+  font-family: "Pinyon Script", cursive;
+  font-size: calc(var(--sd, 46vw) * 0.27);
+  color: #7a5a2a;
+  text-shadow: 0 1px 0 rgba(255, 242, 210, 0.75), 0 -1px 0 rgba(90, 60, 20, 0.35);
+  white-space: nowrap;
 }
 
-.curtain.left {
-  transform-origin: 0 50%;
-  transform: scaleX(0.86);
+.seal-mono i { font-style: normal; font-size: 0.7em; margin: 0 0.04em; }
+
+.playing .seal { pointer-events: none; }
+
+.seal-off .seal {
+  animation: seal-lift 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-.curtain.right {
-  transform-origin: 100% 50%;
-  transform: scaleX(0.86);
-  filter: drop-shadow(-6px 0 10px rgba(90, 76, 50, 0.22));
+@keyframes seal-lift {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  20% { transform: translate(-50%, -50%) scale(0.92); }
+  100% { transform: translate(-50%, -64%) scale(1.3); opacity: 0; filter: blur(6px); }
 }
 
-.parting .curtain { transform: scaleX(0.44); }
-
-.parting .curtain {
-  animation: settle 2.4s ease-in-out 3s;
+.tap-hint {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  bottom: 13%;
+  width: max-content;
+  margin: 0 auto;
+  padding: 7px 18px;
+  border-radius: 999px;
+  background: rgba(45, 55, 35, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 18px;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  color: #f8f0dc;
+  animation: breathe 3.2s ease-in-out infinite;
 }
 
-@keyframes settle {
-  50% { translate: 0 0.4%; }
+.playing .tap-hint {
+  animation: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
 }
 
 .hero-text {
   position: relative;
   z-index: 3;
-  padding: clamp(140px, 21vh, 190px) 30px 0;
+  padding: clamp(52px, 8vh, 84px) 30px 0;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -1054,7 +820,7 @@ footer.block {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .door, .hero, .shade, .reveal > * { transition-duration: 0.01s !important; transition-delay: 0s !important; }
+  .film, .film-veil, .reveal > * { transition-duration: 0.01s !important; transition-delay: 0s !important; }
   .seal, .tap-hint, .btn::after, .shimmer { animation: none !important; }
   .curtain { transition-duration: 0.01s !important; }
   .revealed .seq, .revealed .write { animation-duration: 0.01s !important; animation-delay: 0s !important; }

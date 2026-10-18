@@ -257,16 +257,32 @@ const fx = (() => {
   return { burst, shower, spark, petals };
 })();
 
-/* ───────── Curtains ───────── */
+/* ───────── Opening film ───────── */
 
 const hero = $("hero");
+const film = $("film");
+const body = document.body;
 
-function partCurtains(onHalfway) {
-  hero.classList.add("parting");
-  setTimeout(onHalfway, reduceMotion ? 0 : 900);
+// moments in opening.mp4 (seconds)
+const FILM_REST = 1.9;   // sealed envelope, still
+const SEAL_SPLIT = 2.4;  // envelope parting under the seal
+const FILM_END = 7.45;   // garden, just before the clip's own text appears
+// the clip's wax seal, in video pixels (1280 × 720)
+const SEAL_AT = { x: 636, y: 357, d: 192 };
+
+// put our seal over the clip's seal for an object-fit: cover crop
+function placeSeal() {
+  const w = hero.clientWidth;
+  const h = hero.clientHeight;
+  const vw = film.videoWidth || 1280;
+  const vh = film.videoHeight || 720;
+  const k = Math.max(w / vw, h / vh);
+  const ox = (w - vw * k) / 2;
+  const oy = (h - vh * k) / 2;
+  hero.style.setProperty("--sx", `${ox + SEAL_AT.x * k}px`);
+  hero.style.setProperty("--sy", `${oy + SEAL_AT.y * k}px`);
+  hero.style.setProperty("--sd", `${SEAL_AT.d * k}px`);
 }
-
-/* ───────── Opening: fullscreen, doors, curtains ───────── */
 
 function goFullscreen() {
   const request = root.requestFullscreen || root.webkitRequestFullscreen;
@@ -277,66 +293,73 @@ function goFullscreen() {
   } catch (e) {}
 }
 
-let audio = null;
-
-const body = document.body;
-const at = (ms, fn) => setTimeout(fn, reduceMotion ? 0 : ms);
-
-/* While the envelope is closed, the hero is shrunk to card size and tucked
-   inside it; "lift" slides it most of the way out of the pocket. */
-function placeCard(lift) {
-  const env = $("env").getBoundingClientRect();
-  const page = hero.parentElement.getBoundingClientRect();
-  const s = (env.height * 0.88) / hero.offsetHeight;
-  const x = env.left + (env.width - hero.offsetWidth * s) / 2 - page.left;
-  const y = env.top + env.height * 0.06 - env.height * 0.5 * lift;
-  hero.style.setProperty("--s", s);
-  hero.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
+function restOnEnvelope() {
+  placeSeal();
+  film.addEventListener("seeked", () => film.classList.add("ready"), { once: true });
+  film.currentTime = FILM_REST;
 }
 
-let cardLift = 0;
-placeCard(cardLift);
-addEventListener("resize", () => {
-  if (body.classList.contains("locked") && !hero.classList.contains("full")) placeCard(cardLift);
-});
+// metadata can arrive before this script runs
+if (film.readyState >= 1) restOnEnvelope();
+else film.addEventListener("loadedmetadata", restOnEnvelope, { once: true });
+addEventListener("resize", placeSeal);
+placeSeal();
+
+let audio = null;
+let sealGone = false;
+let ended = false;
+
+function liftSeal() {
+  if (sealGone) return;
+  sealGone = true;
+  const r = $("seal").getBoundingClientRect();
+  body.classList.add("seal-off");
+  fx.burst(r.left + r.width / 2, r.top + r.height / 2, 40, 6);
+}
+
+function finish() {
+  if (ended) return;
+  ended = true;
+  film.pause();
+  film.currentTime = FILM_END;
+  body.classList.add("revealed");
+  fx.petals(60);
+  setTimeout(() => {
+    body.classList.remove("locked");
+    $("seal").remove();
+  }, 900);
+}
+
+function watchFilm() {
+  const t = film.currentTime;
+  if (t >= SEAL_SPLIT - 0.08) liftSeal();
+  if (t >= FILM_END) {
+    finish();
+    return;
+  }
+  requestAnimationFrame(watchFilm);
+}
 
 $("seal").addEventListener("click", () => {
   goFullscreen();
   if (audio) playMusic();
   if (navigator.vibrate) navigator.vibrate(18);
+  body.classList.add("playing");
 
-  const seal = $("seal").getBoundingClientRect();
-  body.classList.add("opening");
-  at(140, () => fx.burst(seal.left + seal.width / 2, seal.top + seal.height / 2, 34, 5));
-
-  // the flap folds back; once it is past upright the card behind it shows
-  at(450, () => body.classList.add("flap-open"));
-  at(1000, () => body.classList.add("card-showing"));
-  at(1400, () => {
-    hero.classList.add("moving");
-    cardLift = 1;
-    placeCard(cardLift);
-    fx.petals(70);
-  });
-
-  // envelope sinks away while the card grows into the full screen
-  at(2900, () => {
-    body.classList.add("env-away");
-    hero.classList.add("full");
-    hero.style.transform = "none";
-  });
-  at(4200, () => {
-    partCurtains(() => body.classList.add("revealed"));
-  });
-  at(5000, () => {
-    body.classList.remove("locked", "card-showing");
-    hero.classList.remove("moving", "full");
-    hero.style.removeProperty("transform");
-    hero.style.removeProperty("--s");
-    $("doors").remove();
-    $("env-over").remove();
-  });
+  if (reduceMotion) {
+    liftSeal();
+    finish();
+    return;
+  }
+  const started = film.play();
+  if (started && started.catch) {
+    // if the browser refuses to play, still open the invitation
+    started.catch(() => { liftSeal(); finish(); });
+  }
+  requestAnimationFrame(watchFilm);
 }, { once: true });
+
+film.addEventListener("ended", finish);
 
 /* ───────── Music ───────── */
 
