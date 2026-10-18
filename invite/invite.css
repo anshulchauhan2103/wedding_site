@@ -131,7 +131,7 @@ body::after {
   object-fit: cover;
   object-position: 50% 50%;
   opacity: 0;
-  transition: opacity 0.8s ease;
+  transition: opacity 1.2s ease;
 }
 
 .film.ready { opacity: 1; }

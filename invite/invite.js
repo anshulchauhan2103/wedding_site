@@ -277,6 +277,7 @@ const DOOR_EDGES = [
   [2.8, 181, 506], [2.9, 148, 539], [3.0, 98, 583], [3.4, -150, 860],
 ];
 const SEAL_GONE = 3.35;  // doors have left the frame
+const SETTLE = 1.2;      // seconds of film over which playback eases to a stop
 
 // put our seal over the clip's seal for an object-fit: cover crop
 function placeSeal() {
@@ -367,20 +368,31 @@ function liftSeal() {
   body.classList.add("seal-off");
 }
 
+let revealed = false;
+
+// names start writing in while the camera is still settling
+function reveal() {
+  if (revealed) return;
+  revealed = true;
+  body.classList.add("revealed");
+  fx.petals(60);
+}
+
 function finish() {
   if (ended) return;
   ended = true;
   crackSeal();
   liftSeal();
   film.pause();
+  film.playbackRate = 1;
   // normally we stop right on the garden; if playback never got there
-  // (blocked or failed), fall back to the garden still behind the film
+  // (blocked or stalled), fade across to the garden still behind the film
   if (Math.abs(film.currentTime - FILM_END) > 0.4) film.classList.remove("ready");
-  body.classList.add("revealed");
-  fx.petals(60);
+  reveal();
   setTimeout(() => {
     body.classList.remove("locked");
-    $("seal").remove();
+    const seal = $("seal");
+    if (seal) seal.remove();
   }, 900);
 }
 
@@ -390,6 +402,15 @@ function watchFilm(e) {
   moveHalves(t);
   if (t >= SEAL_SPLIT) crackSeal();
   if (t >= SEAL_GONE) liftSeal();
+
+  // ease the film to a stop instead of freezing it mid-motion
+  const left = FILM_END - t;
+  if (left < SETTLE) {
+    const k = Math.max(0, left / SETTLE);
+    film.playbackRate = Math.max(0.12, k * k * (3 - 2 * k));
+  }
+  if (left < 0.7) reveal();
+
   if (t >= FILM_END) {
     finish();
     return;
@@ -419,7 +440,19 @@ $("seal").addEventListener("click", () => {
   const ms = (t) => (t - FILM_REST) * 1000;
   setTimeout(crackSeal, ms(SEAL_SPLIT) + 300);
   setTimeout(liftSeal, ms(SEAL_GONE) + 300);
-  setTimeout(finish, ms(FILM_END) + 1500);
+  // only cut to the ending if the film has genuinely stalled
+  let lastT = -1;
+  let stuckFor = 0;
+  const stallCheck = setInterval(() => {
+    if (ended) return clearInterval(stallCheck);
+    if (film.currentTime > lastT + 0.01) {
+      lastT = film.currentTime;
+      stuckFor = 0;
+    } else if ((stuckFor += 500) >= 3000) {
+      clearInterval(stallCheck);
+      finish();
+    }
+  }, 500);
 }, { once: true });
 
 film.addEventListener("ended", finish);
