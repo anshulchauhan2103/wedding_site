@@ -34,39 +34,35 @@
   <!-- foil flakes -->
   <canvas class="fx" id="fx" aria-hidden="true"></canvas>
 
-  <!-- ───────── Shagun envelope (first screen) ───────── -->
-  <div class="doors" id="doors">
-    <div class="env" id="env">
+  <!-- ───────── Shagun envelope (first screen) ─────────
+       Two fixed layers sandwich the real hero: the back of the envelope sits
+       behind it and the pocket sits in front, so the "card" that slides out
+       is the curtain scene itself and simply grows to fill the screen. -->
+  <div class="env-layer env-under" id="doors" aria-hidden="true">
+    <div class="env">
       <div class="env-back"><span class="liner"></span></div>
-
-      <div class="env-card">
-        <div class="card-frame">
-          <p class="card-mantra">॥ श्री गणेशाय नमः ॥</p>
-          <p class="card-title">शुभ विवाह</p>
-          <span class="card-rule" aria-hidden="true"></span>
-          <p class="card-names">Kishika <i>&amp;</i> Anshul</p>
-          <p class="card-date">27 · 28 January 2027</p>
-          <p class="card-city">Chandigarh</p>
+      <div class="env-flap">
+        <div class="flap-face flap-out">
+          <svg class="zari" viewBox="0 0 100 80" preserveAspectRatio="none"><path d="M3.5 3.5H96.5L50 74Z"/><path class="fine" d="M8 6.5H92L50 69.5Z"/></svg>
         </div>
+        <div class="flap-face flap-in"></div>
       </div>
+    </div>
+    <p class="tap-hint">&nbsp;</p>
+  </div>
 
+  <div class="env-layer env-over" id="env-over">
+    <div class="env" id="env">
       <div class="env-front">
         <svg class="zari" viewBox="0 0 100 142" preserveAspectRatio="none" aria-hidden="true">
           <path d="M3.5 4 50 76 96.5 4M3.5 4V138.5H96.5V4"/>
           <path class="fine" d="M6.5 8.5 50 72.5 93.5 8.5M6.5 8.5V135.5H93.5V8.5"/>
         </svg>
       </div>
-
-      <div class="env-flap" id="flap">
-        <div class="flap-face flap-out">
-          <svg class="zari" viewBox="0 0 100 80" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M3.5 3.5H96.5L50 74Z"/>
-            <path class="fine" d="M8 6.5H92L50 69.5Z"/>
-          </svg>
-        </div>
-        <div class="flap-face flap-in"></div>
+      <!-- closed flap shown until the fold starts; the folding copy lives in the layer below -->
+      <div class="flap-face flap-out flap-static" aria-hidden="true">
+        <svg class="zari" viewBox="0 0 100 80" preserveAspectRatio="none"><path d="M3.5 3.5H96.5L50 74Z"/><path class="fine" d="M8 6.5H92L50 69.5Z"/></svg>
       </div>
-
       <button class="seal" id="seal" aria-label="Open the invitation">
         <img src="mandala.png" alt="">
         <span>K<i>&amp;</i>A</span>

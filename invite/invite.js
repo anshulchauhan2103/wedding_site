@@ -282,6 +282,24 @@ let audio = null;
 const body = document.body;
 const at = (ms, fn) => setTimeout(fn, reduceMotion ? 0 : ms);
 
+/* While the envelope is closed, the hero is shrunk to card size and tucked
+   inside it; "lift" slides it most of the way out of the pocket. */
+function placeCard(lift) {
+  const env = $("env").getBoundingClientRect();
+  const page = hero.parentElement.getBoundingClientRect();
+  const s = (env.height * 0.88) / hero.offsetHeight;
+  const x = env.left + (env.width - hero.offsetWidth * s) / 2 - page.left;
+  const y = env.top + env.height * 0.06 - env.height * 0.5 * lift;
+  hero.style.setProperty("--s", s);
+  hero.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
+}
+
+let cardLift = 0;
+placeCard(cardLift);
+addEventListener("resize", () => {
+  if (body.classList.contains("locked") && !hero.classList.contains("full")) placeCard(cardLift);
+});
+
 $("seal").addEventListener("click", () => {
   goFullscreen();
   if (audio) playMusic();
@@ -291,21 +309,32 @@ $("seal").addEventListener("click", () => {
   body.classList.add("opening");
   at(140, () => fx.burst(seal.left + seal.width / 2, seal.top + seal.height / 2, 34, 5));
 
-  // flap folds back, then tucks behind the card once it passes upright
+  // the flap folds back; once it is past upright the card behind it shows
   at(450, () => body.classList.add("flap-open"));
-  at(1050, () => body.classList.add("flap-behind"));
-  at(1500, () => {
-    body.classList.add("card-up");
+  at(1000, () => body.classList.add("card-showing"));
+  at(1400, () => {
+    hero.classList.add("moving");
+    cardLift = 1;
+    placeCard(cardLift);
     fx.petals(70);
   });
-  at(3000, () => body.classList.add("env-away"));
-  at(3700, () => {
-    body.classList.add("doors-out");
+
+  // envelope sinks away while the card grows into the full screen
+  at(2900, () => {
+    body.classList.add("env-away");
+    hero.classList.add("full");
+    hero.style.transform = "none";
+  });
+  at(4200, () => {
     partCurtains(() => body.classList.add("revealed"));
   });
-  at(4800, () => {
-    body.classList.remove("locked");
+  at(5000, () => {
+    body.classList.remove("locked", "card-showing");
+    hero.classList.remove("moving", "full");
+    hero.style.removeProperty("transform");
+    hero.style.removeProperty("--s");
     $("doors").remove();
+    $("env-over").remove();
   });
 }, { once: true });
 
