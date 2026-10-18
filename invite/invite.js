@@ -43,36 +43,6 @@ function makeGrain() {
   root.style.setProperty("--grain", `url(${c.toDataURL()})`);
 }
 
-// scalloped lace edge of the medallion
-function buildSeal() {
-  const scallops = $("seal-scallops");
-  const lace = $("seal-lace");
-  const add = (parent, tag, attrs) => {
-    const el = document.createElementNS(SVG_NS, tag);
-    for (const k in attrs) el.setAttribute(k, attrs[k]);
-    parent.appendChild(el);
-  };
-
-  for (let i = 0; i < 28; i++) {
-    const a = (i / 28) * Math.PI * 2;
-    add(scallops, "circle", {
-      cx: 80 + Math.cos(a) * 62, cy: 80 + Math.sin(a) * 62, r: 7.4,
-      fill: "url(#m-scallop)", stroke: "url(#m-gold)", "stroke-width": 0.6,
-    });
-  }
-  add(scallops, "circle", { cx: 80, cy: 80, r: 63, fill: "url(#m-scallop)" });
-
-  for (let i = 0; i < 32; i++) {
-    const a = (i / 32) * Math.PI * 2;
-    add(lace, "circle", { cx: 80 + Math.cos(a) * 51.5, cy: 80 + Math.sin(a) * 51.5, r: 2.1, fill: "#c9b48a", "fill-opacity": 0.75 });
-    const b = a + Math.PI / 32;
-    add(lace, "circle", { cx: 80 + Math.cos(b) * 55.5, cy: 80 + Math.sin(b) * 55.5, r: 0.9, fill: "#b8995c" });
-  }
-  add(lace, "circle", { cx: 80, cy: 80, r: 48, fill: "none", stroke: "#c4a868", "stroke-width": 0.7, "stroke-dasharray": "1 2.2" });
-}
-
-makeGrain();
-buildSeal();
 
 /* ───────── Confetti: petals, paper and gold foil ───────── */
 
@@ -94,6 +64,8 @@ const fx = (() => {
     [[163, 180, 145], [124, 142, 108]],
   ];
   const GOLD = [[214, 178, 104], [150, 116, 56]];
+  const MARIGOLD = [[246, 146, 30], [255, 176, 20], [238, 118, 22], [255, 200, 64]];
+  const ROSE = [[176, 22, 40], [204, 44, 58]];
   const PETAL = [[246, 214, 204], [232, 176, 164], [252, 238, 230]];
 
   const rand = (a, b) => a + Math.random() * (b - a);
@@ -124,7 +96,7 @@ const fx = (() => {
     if (kind === "petal") {
       bit.w = rand(9, 14) * size;
       bit.h = bit.w * rand(0.75, 0.95);
-      bit.color = pick(PETAL);
+      bit.color = pick(opts.colors || PETAL);
       bit.vtx *= 0.5;
     } else if (kind === "gold") {
       bit.w = rand(5, 8) * size;
@@ -156,6 +128,16 @@ const fx = (() => {
   function shower(n) {
     for (let i = 0; i < n; i++) {
       setTimeout(() => add(rand(-20, w + 20), rand(-60, -10), rand(-30, 30), rand(30, 90)), i * 18);
+    }
+  }
+
+  // marigold and rose petals drifting down from above the screen
+  function petals(n) {
+    for (let i = 0; i < n; i++) {
+      setTimeout(() => add(rand(-20, w + 20), rand(-60, -10), rand(-30, 30), rand(20, 70), {
+        kind: Math.random() < 0.85 ? "petal" : "gold",
+        colors: Math.random() < 0.8 ? MARIGOLD : ROSE,
+      }), i * 22);
     }
   }
 
@@ -272,7 +254,7 @@ const fx = (() => {
   resize();
   addEventListener("resize", resize);
 
-  return { burst, shower, spark };
+  return { burst, shower, spark, petals };
 })();
 
 /* ───────── Curtains ───────── */
@@ -297,20 +279,34 @@ function goFullscreen() {
 
 let audio = null;
 
+const body = document.body;
+const at = (ms, fn) => setTimeout(fn, reduceMotion ? 0 : ms);
+
 $("seal").addEventListener("click", () => {
   goFullscreen();
   if (audio) playMusic();
   if (navigator.vibrate) navigator.vibrate(18);
 
   const seal = $("seal").getBoundingClientRect();
-  document.body.classList.add("opening");
-  setTimeout(() => fx.burst(seal.left + seal.width / 2, seal.top + seal.height / 2, 40, 5), 140);
+  body.classList.add("opening");
+  at(140, () => fx.burst(seal.left + seal.width / 2, seal.top + seal.height / 2, 34, 5));
 
-  setTimeout(() => {
-    document.body.classList.remove("locked");
+  // flap folds back, then tucks behind the card once it passes upright
+  at(450, () => body.classList.add("flap-open"));
+  at(1050, () => body.classList.add("flap-behind"));
+  at(1500, () => {
+    body.classList.add("card-up");
+    fx.petals(70);
+  });
+  at(3000, () => body.classList.add("env-away"));
+  at(3700, () => {
+    body.classList.add("doors-out");
+    partCurtains(() => body.classList.add("revealed"));
+  });
+  at(4800, () => {
+    body.classList.remove("locked");
     $("doors").remove();
-  }, 2900);
-  setTimeout(() => partCurtains(() => document.body.classList.add("revealed")), 1900);
+  });
 }, { once: true });
 
 /* ───────── Music ───────── */
