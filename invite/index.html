@@ -103,17 +103,20 @@ body{margin:0;background:var(--desk);color:var(--ink);font-family:var(--f-body);
 
 /* ---------- SCHEDULE ---------- */
 .schedule{padding-block:90px 80px}
-.tl{position:relative;margin-top:44px;display:grid;gap:34px}
-.tl-line{position:absolute;left:50%;top:6px;bottom:6px;width:1px;margin-left:-.5px;background:rgba(94,76,51,.3)}
-.ev{display:grid;grid-template-columns:1fr 34px 1fr;align-items:center}
-.dot{grid-column:2;grid-row:1;justify-self:center;width:16px;height:16px;border-radius:50%;background:var(--paper);border:1px solid var(--ink-soft);position:relative}
-.dot::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--ink-soft)}
-.ev-card{grid-row:1;min-width:0;display:flex;align-items:center;gap:10px;background:var(--card);border-radius:10px;padding:11px 12px;box-shadow:0 3px 12px rgba(60,40,10,.14)}
-.ev.r .ev-card{grid-column:3}.ev.l .ev-card{grid-column:1}
-.ev-ico{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#f2efe9;color:var(--ink-soft);font-size:12px}
-.ev-txt{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
-.pill{font-family:var(--f-display);font-size:9.5px;letter-spacing:.08em;padding:2px 7px;border-radius:4px;background:var(--pill);color:#fff;font-variant-numeric:tabular-nums}
-.ev-name{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:600;font-size:13.5px;line-height:1.2;color:#444}
+/* option C: thin gold line, gold diamonds, events written straight on the paper */
+.tl{position:relative;margin-top:40px}
+.tl::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;margin-left:-.5px;
+  background:linear-gradient(180deg,transparent,rgba(156,123,69,.7) 6%,rgba(156,123,69,.7) 94%,transparent)}
+.tl-day{position:relative;text-align:center;margin:6px 0 24px}
+.tl-day b{display:inline-block;padding:4px 16px;background:var(--paper);font-family:var(--f-script);font-weight:400;font-size:clamp(32px,9vw,40px);color:var(--gold);line-height:1.1}
+.tl-day div{display:inline-block;margin-top:2px;padding:0 10px;background:var(--paper);font-family:var(--f-display);font-size:12px;letter-spacing:.3em;color:var(--ink-soft)}
+.ev{position:relative;display:grid;grid-template-columns:1fr 34px 1fr;align-items:center;margin-bottom:28px}
+.ev .dia{grid-column:2;grid-row:1;justify-self:center;width:11px;height:11px;transform:rotate(45deg);background:var(--paper);border:1px solid var(--gold);box-shadow:0 0 0 3px var(--paper)}
+.ev .txt{grid-row:1;min-width:0}
+.ev.l .txt{grid-column:1;text-align:right}
+.ev.r .txt{grid-column:3;text-align:left}
+.ev .t{font-family:var(--f-display);font-size:13px;letter-spacing:.24em;color:var(--gold);font-variant-numeric:tabular-nums}
+.ev .n{font-family:var(--f-display);font-size:clamp(16px,4.6vw,19px);letter-spacing:.05em;text-transform:uppercase;line-height:1.25;margin-top:3px;color:var(--ink)}
 
 /* ---------- COUNTDOWN on the hands artwork ---------- */
 .countdown{padding:0;text-align:center}
@@ -240,11 +243,13 @@ html.js [data-reveal].in{opacity:1;filter:blur(0);transform:translateY(0)}
     <h2>Wedding Schedule</h2>
   </div>
   <div class="tl">
-    <span class="tl-line"></span>
-    <div class="ev r" data-reveal><span class="dot"></span><div class="ev-card"><span class="ev-ico">✦</span><div class="ev-txt"><span class="pill">11:00 AM</span><span class="ev-name">Haldi Ceremony</span></div></div></div>
-    <div class="ev l" data-reveal><span class="dot"></span><div class="ev-card"><span class="ev-ico">✦</span><div class="ev-txt"><span class="pill">04:00 PM</span><span class="ev-name">Wedding Vows</span></div></div></div>
-    <div class="ev r" data-reveal><span class="dot"></span><div class="ev-card"><span class="ev-ico">✦</span><div class="ev-txt"><span class="pill">07:00 PM</span><span class="ev-name">Grand Reception</span></div></div></div>
-    <div class="ev l" data-reveal><span class="dot"></span><div class="ev-card"><span class="ev-ico">✦</span><div class="ev-txt"><span class="pill">08:30 PM</span><span class="ev-name">Dinner</span></div></div></div>
+    <div class="tl-day" data-reveal><b>Day One</b><br><div>WEDNESDAY · 27 JAN</div></div>
+    <div class="ev r" data-reveal><span class="dia"></span><div class="txt"><div class="t">11:00 AM</div><div class="n">Haldi</div></div></div>
+    <div class="ev l" data-reveal><span class="dia"></span><div class="txt"><div class="t">7:00 PM</div><div class="n">Engagement &amp;<br>Cocktail Party</div></div></div>
+
+    <div class="tl-day" data-reveal><b>Day Two</b><br><div>THURSDAY · 28 JAN</div></div>
+    <div class="ev r" data-reveal><span class="dia"></span><div class="txt"><div class="t">5:00 PM</div><div class="n">Baraat</div></div></div>
+    <div class="ev l" data-reveal><span class="dia"></span><div class="txt"><div class="t">8:00 PM</div><div class="n">Varmala</div></div></div>
   </div>
 </section>
 
